@@ -1,7 +1,22 @@
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Building2, Eye, EyeOff } from 'lucide-react';
+import {
+  Building2, ShieldCheck, Wrench, User, Users, Home, Lock,
+  ClipboardCheck, Key, Mail, Smartphone, Settings, Calendar,
+  EyeOff, Eye, Hammer, Bell, FileText, Monitor, Globe,
+  Cloud, Sun, Moon, Star, Zap, Umbrella, Droplet, Wind,
+  Coffee, Heart, MessageSquare, AlertCircle, Camera, Headphones
+} from 'lucide-react';
+
+const floatingIcons = [
+  ShieldCheck, Wrench, User, Users, Home, Lock,
+  ClipboardCheck, Key, Mail, Smartphone, Settings, Calendar,
+  Hammer, Bell, FileText, Monitor, Globe,
+  Cloud, Sun, Moon, Star, Zap, Umbrella,
+  Droplet, Wind, Coffee, Heart, MessageSquare,
+  AlertCircle, Camera, Headphones
+];
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -11,6 +26,12 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { login, isAuthenticated } = useAuth();
 
+  const demoCredentials = [
+    { role: 'Admin', username: 'admin', password: 'password123' },
+    { role: 'Tenant', username: 'tenant1', password: 'password123' },
+    { role: 'Maintenance', username: 'maintenance1', password: 'password123' },
+  ];
+
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -19,7 +40,6 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       await login(username, password);
     } catch (err: any) {
@@ -29,29 +49,92 @@ const Login: React.FC = () => {
     }
   };
 
-  const demoCredentials = [
-    { role: 'Admin', username: 'admin', password: 'password123' },
-    { role: 'Tenant', username: 'tenant1', password: 'password123' },
-    { role: 'Maintenance', username: 'maintenance1', password: 'password123' }
-  ];
+  // Create a more controlled random distribution
+  const getRandomPosition = (index: number, total: number) => {
+    // Divide screen into sectors and ensure coverage
+    const sectorSize = 100 / Math.ceil(Math.sqrt(total));
+    const sectorRow = Math.floor(index / Math.ceil(Math.sqrt(total)));
+    const sectorCol = index % Math.ceil(Math.sqrt(total));
+    
+    // Position within sector with some randomness
+    const minPos = 5; // Minimum distance from edges
+    const top = minPos + sectorRow * sectorSize + (Math.random() * (sectorSize - minPos * 2));
+    const left = minPos + sectorCol * sectorSize + (Math.random() * (sectorSize - minPos * 2));
+    
+    return { top, left };
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center">
-            <Building2 className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            ApartmentCare
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to your account
-          </p>
-        </div>
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-200 overflow-hidden">
+      
+      {/* Enhanced Floating Icons with Full Coverage */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {floatingIcons.map((Icon, index) => {
+          const { top, left } = getRandomPosition(index, floatingIcons.length);
+          const size = 32 + (index % 4) * 8;
+          const duration = 10 + (index % 7);
+          const delay = (index * 0.3) % 8;
+          const colorClass = [
+            'text-blue-500', 
+            'text-emerald-500', 
+            'text-violet-500',
+            'text-amber-500',
+            'text-rose-500'
+          ][index % 5];
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
+          return (
+            <div
+              key={index}
+              className={`absolute ${colorClass}`}
+              style={{
+                top: `${top}%`,
+                left: `${left}%`,
+                width: `${size}px`,
+                height: `${size}px`,
+                animation: `float ${duration}s ease-in-out ${delay}s infinite`,
+                filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.1))',
+                transform: 'translate(-50%, -50%)'
+              }}
+            >
+              <Icon className="w-full h-full" />
+            </div>
+          );
+        })}
+
+        {/* Additional decorative elements for depth */}
+        {Array.from({ length: 24 }).map((_, index) => {
+          const { top, left } = getRandomPosition(index + floatingIcons.length, 24);
+          const size = 40 + (index % 5) * 15;
+          
+          return (
+            <div
+              key={`circle-${index}`}
+              className="absolute rounded-full bg-blue-300/20"
+              style={{
+                width: `${size}px`,
+                height: `${size}px`,
+                top: `${top}%`,
+                left: `${left}%`,
+                animation: `pulse ${12 + (index % 8)}s ease-in-out ${index % 5}s infinite`,
+                transform: 'translate(-50%, -50%)'
+              }}
+            />
+          );
+        })}
+      </div>
+
+      {/* Login Card */}
+      <div className="w-full max-w-md rounded-3xl bg-white/30 shadow-2xl backdrop-blur-lg border border-white/30 z-10">
+        <div className="p-8">
+          <div className="text-center mb-6">
+            <div className="mx-auto h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center shadow-lg">
+              <Building2 className="h-8 w-8 text-white" />
+            </div>
+            <h2 className="mt-4 text-3xl font-bold text-gray-800">ApartmentCare</h2>
+            <p className="text-sm text-gray-600">Sign in to your account</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                 Username or Email
@@ -62,74 +145,79 @@ const Login: React.FC = () => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
                 placeholder="Enter username or email"
               />
             </div>
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
-              <div className="mt-1 relative">
+              <div className="relative mt-1">
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"
                   placeholder="Enter password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-gray-400" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-gray-400" />
-                  )}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
-          </div>
 
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-700">{error}</div>
-            </div>
-          )}
+            {error && (
+              <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-4 py-2">
+                {error}
+              </div>
+            )}
 
-          <div>
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition disabled:opacity-50"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
-          </div>
-        </form>
+          </form>
 
-        <div className="mt-8">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-500">Demo Credentials</span>
-            </div>
-          </div>
-          <div className="mt-4 space-y-2">
-            {demoCredentials.map((cred, index) => (
-              <div key={index} className="text-xs text-gray-600 bg-white p-2 rounded border">
-                <strong>{cred.role}:</strong> {cred.username} / {cred.password}
+          <div className="mt-8 text-sm text-gray-600">
+            <div className="border-t pt-4">
+              <p className="text-center font-medium mb-2">Demo Credentials</p>
+              <div className="space-y-2 text-xs">
+                {demoCredentials.map((cred, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between bg-white border px-3 py-2 rounded shadow-sm"
+                  >
+                    <span className="font-medium">{cred.role}</span>
+                    <span>{cred.username} / {cred.password}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+          50% { transform: translate(-50%, calc(-50% - 25px)) rotate(5deg); }
+        }
+        @keyframes pulse {
+          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
+          50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.3; }
+        }
+      `}</style>
     </div>
   );
 };
